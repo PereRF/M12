@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+   php-httpd:
+      image: php:8.1-apache
+      ports:
+         - 88:80
+      volumes:
+         - "./DocumentRoot/app/:/var/www/html"
+         
+   mariadb:
+      image: mariadb:10.5.2
+      volumes:
+         - "./database:/var/lib/mysql"
+      environment:
+         TZ: "Europe/Madrid"
+         MYSQL_ROOT_PASSWORD: "super"
+         MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+         MYSQL_DATABASE: 'testdatabase'
+         MYSQL_USER: 'super'
+         MYSQL_PASSWORD: 'super'
+
+   phpmyadmin:
+      image: phpmyadmin
+      ports:
+         - 8080:80
+      links:
+         - 'mariadb:db'
+         
+   api:
+    build:
+      context: ./DocumentRoot/api
+      dockerfile: Dockerfile
+    container_name: fastapi
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./DocumentRoot/app:/app
+         
+  
